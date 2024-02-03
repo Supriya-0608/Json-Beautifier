@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask JSON Beautifier</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>JSON Beautifier</h1>
+    <form action="/beautify" method="post">
+        <label for="json_input">Enter the text to beautify:</label><br>
+        <textarea id="json_input" name="json_input" rows="10" cols="50"></textarea><br>
+        <label for="tab_space">Choose the spacing:</label>
+        <input type="number" id="tab_space" name="tab_space" min="1" max="10" value="2"><br><br>
+        <input type="submit" value="Beautify">
+    </form>
+    <hr>
+    <h2>Beautified JSON:</h2>
+    <pre id="beautified_result"></pre>
+    <p id="error_message"></p>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            fetch('/beautify', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.result) {
+                    document.getElementById('beautified_result').innerText = data.result;
+                    document.getElementById('error_message').innerText = '';
+                } else {
+                    document.getElementById('error_message').innerText = data.error;
+                    document.getElementById('beautified_result').innerText = '';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        });
+    });
+</script>
+</body>
+</html>
